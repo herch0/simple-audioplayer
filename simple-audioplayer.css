@@ -6,5 +6,52 @@
   border-radius: 5px;
   background-color: #F6F6F8;
   display: flex;
+  flex-direction: column;
+  /*align-items: center;*/
+}
+
+.player-controls-container {
+  display: flex;
   flex-direction: row;
+  align-items: center;
+}
+
+.player-control {
+  height: 28px;
+  margin: 4px;
+}
+
+.player-pause {
+  display: none;
+  background: url(img/pause.png) no-repeat center center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  width: 28px;
+  box-shadow: 0 0 3px #ccc;
+}
+
+.player-play {
+  background: url(img/play.png) no-repeat center center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  width: 28px;
+  box-shadow: 0 0 3px #ccc;
+}
+
+.player-stop {
+  background: url(img/stop.png) no-repeat center center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  width: 28px;
+  box-shadow: 0 0 3px #ccc;
+}
+
+.player-volume {
+  background: url(img/volume.png) no-repeat left center;
+  padding-left: 18px;
+}
+
+.muted {
+  background: url(img/mute.png) no-repeat left center;
+  padding-left: 18px;
 }

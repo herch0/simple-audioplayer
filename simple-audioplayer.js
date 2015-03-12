@@ -2,38 +2,63 @@ function SAudioPlayer(config) {
   //assume required parameters are specified
   this.container = config.container;
   this.insertAudioElement();
-  this.createUI();
+  this.initUI();
+  this.initEvents();
 }
 
-SAudioPlayer.prototype.insertAudioElement = function() {
-  var audio = document.createElement('audio');
-  var domContainer = document.getElementById(this.container);
-  var audioSrc = domContainer.dataset.src;
-  audio.setAttribute('src', audioSrc);
-  domContainer.appendChild(audio);
-  this.domContainer = domContainer;
+SAudioPlayer.prototype.insertAudioElement = function () {
+  this.audioElement = document.createElement('audio');
+  this.domContainer = document.getElementById(this.container);
+  var audioSrc = this.domContainer.dataset.src;
+  this.audioElement.setAttribute('src', audioSrc);
+  this.audioElement.setAttribute('preload', 'metadata');
+  this.domContainer.appendChild(this.audioElement);
 };
 
-SAudioPlayer.prototype.createUI = function() {
-  var playButton = document.createElement('button');
-  playButton.classList.add('player-play');
-  playButton.classList.add('player-control');
-  var pauseButton = document.createElement('button');
-  pauseButton.classList.add('player-control');
-  pauseButton.classList.add('player-pause');
-  var stopButton = document.createElement('button');
-  stopButton.classList.add('player-stop');
-  stopButton.classList.add('player-control');
-  var playerProgress = document.createElement('progress');
-  playerProgress.classList.add('player-progress');
-  playerProgress.classList.add('player-control');
-  playerProgress.setAttribute('value', 0)
-  var playerVolume = document.createElement('input');
-  playerVolume.classList.add('player-volume');
-  playerVolume.classList.add('player-control');
-  playerVolume.setAttribute('type', 'range');
-  playerVolume.setAttribute('min', 0);
-  playerVolume.setAttribute('max', 100);
+SAudioPlayer.prototype.initControls = function () {
+  this.playButton = document.createElement('button');
+  this.playButton.classList.add('player-play');
+  this.playButton.classList.add('player-control');
+  this.pauseButton = document.createElement('button');
+  this.pauseButton.classList.add('player-control');
+  this.pauseButton.classList.add('player-pause');
+  this.stopButton = document.createElement('button');
+  this.stopButton.classList.add('player-stop');
+  this.stopButton.classList.add('player-control');
+  this.playerProgress = document.createElement('progress');
+  this.playerProgress.classList.add('player-progress');
+  this.playerProgress.classList.add('player-control');
+  this.playerProgress.setAttribute('value', 0)
+  this.playerVolume = document.createElement('input');
+  this.playerVolume.classList.add('player-volume');
+  this.playerVolume.classList.add('player-control');
+  this.playerVolume.setAttribute('type', 'range');
+  this.playerVolume.setAttribute('min', 0);
+  this.playerVolume.setAttribute('max', 100);
+};
+
+SAudioPlayer.prototype.initEvents = function () {
+  var player = this;
+  this.playButton.addEventListener('click', function () {
+    player.play()
+  }, false);
+  this.pauseButton.addEventListener('click', function () {
+    player.pause()
+  }, false);
+  this.stopButton.addEventListener('click', function () {
+    player.stop()
+  }, false);
+  this.audioElement.addEventListener('timeupdate', function () {
+    player.progress()
+  }, false);
+  this.audioElement.addEventListener('ended', function () {
+    player.pauseButton.style.display = 'none';
+    player.playButton.style.display = 'inline';
+  }, false);
+}
+
+SAudioPlayer.prototype.initUI = function () {
+  this.initControls();
   var divUI = document.createElement('div');
   divUI.className = 'player-ui';
   var divCredits = document.createElement('div');
@@ -42,14 +67,38 @@ SAudioPlayer.prototype.createUI = function() {
   divTrackTitle.className = 'player-track-title';
   var divControls = document.createElement('div');
   divControls.className = 'player-controls-container';
-  divControls.appendChild(playButton);
-  divControls.appendChild(pauseButton);
-  divControls.appendChild(stopButton);
-  divControls.appendChild(playerProgress);
-  divControls.appendChild(playerVolume);
+  divControls.appendChild(this.playButton);
+  divControls.appendChild(this.pauseButton);
+  divControls.appendChild(this.stopButton);
+  divControls.appendChild(this.playerProgress);
+  divControls.appendChild(this.playerVolume);
   divUI.appendChild(divCredits);
   divUI.appendChild(divControls);
   divUI.appendChild(divTrackTitle);
   this.domContainer.appendChild(divUI);
+}
+
+SAudioPlayer.prototype.play = function () {
+  if (!isNaN(this.audioElement.duration)) {
+    this.playerProgress.max = this.audioElement.duration;
+  }
+  this.audioElement.play();
+  this.playButton.style.display = 'none';
+  this.pauseButton.style.display = 'inline';
+};
+
+SAudioPlayer.prototype.pause = function () {
+  this.audioElement.pause();
+  this.pauseButton.style.display = 'none';
+  this.playButton.style.display = 'inline';
+};
+
+SAudioPlayer.prototype.stop = function () {
+  this.audioElement.pause();
+  this.audioElement.currentTime = 0;
+};
+
+SAudioPlayer.prototype.progress = function () {
+  this.playerProgress.value = this.audioElement.currentTime;
 };
 

@@ -47,8 +47,15 @@
 }
 
 .player-volume {
+  /*padding-left: 18px;*/
+  margin-left: 0;
+}
+
+.player-mute {
   background: url(img/volume.png) no-repeat left center;
-  padding-left: 18px;
+  border: 0;
+  width: 16px;
+  margin-right: 0;
 }
 
 .muted {

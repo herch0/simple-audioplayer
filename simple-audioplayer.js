@@ -29,6 +29,9 @@ SAudioPlayer.prototype.initControls = function () {
   this.playerProgress.classList.add('player-progress');
   this.playerProgress.classList.add('player-control');
   this.playerProgress.setAttribute('value', 0)
+  this.muteButton = document.createElement('button');
+  this.muteButton.classList.add('player-mute');
+  this.muteButton.classList.add('player-control');
   this.playerVolume = document.createElement('input');
   this.playerVolume.classList.add('player-volume');
   this.playerVolume.classList.add('player-control');
@@ -47,6 +50,9 @@ SAudioPlayer.prototype.initEvents = function () {
   }, false);
   this.stopButton.addEventListener('click', function () {
     player.stop()
+  }, false);
+  this.muteButton.addEventListener('click', function () {
+    player.toggleMuted();
   }, false);
   this.audioElement.addEventListener('timeupdate', function () {
     player.progress()
@@ -71,6 +77,7 @@ SAudioPlayer.prototype.initUI = function () {
   divControls.appendChild(this.pauseButton);
   divControls.appendChild(this.stopButton);
   divControls.appendChild(this.playerProgress);
+  divControls.appendChild(this.muteButton);
   divControls.appendChild(this.playerVolume);
   divUI.appendChild(divCredits);
   divUI.appendChild(divControls);
@@ -101,4 +108,8 @@ SAudioPlayer.prototype.stop = function () {
 SAudioPlayer.prototype.progress = function () {
   this.playerProgress.value = this.audioElement.currentTime;
 };
+
+SAudioPlayer.prototype.toggleMuted = function() {
+  this.audioElement.muted = !this.audioElement.muted;
+}
 

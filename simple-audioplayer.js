@@ -1,5 +1,4 @@
 function SAudioPlayer(config) {
-  //assume required parameters are specified
   this.container = config.container;
   this.insertAudioElement();
   this.initUI();

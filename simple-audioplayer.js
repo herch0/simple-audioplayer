@@ -3,7 +3,8 @@ function SAudioPlayer(config) {
   this.container = config.container;
   this.insertAudioElement();
   this.initUI();
-  this.initEvents();
+  this.initUIEvents();
+  this.initMediaEvents();
 }
 
 SAudioPlayer.prototype.insertAudioElement = function () {
@@ -28,7 +29,8 @@ SAudioPlayer.prototype.initControls = function () {
   this.playerProgress = document.createElement('progress');
   this.playerProgress.classList.add('player-progress');
   this.playerProgress.classList.add('player-control');
-  this.playerProgress.setAttribute('value', 0)
+  this.playerProgress.setAttribute('value', 0);
+  this.playerProgress.setAttribute('max', 100);
   this.muteButton = document.createElement('button');
   this.muteButton.classList.add('player-mute');
   this.muteButton.classList.add('player-control');
@@ -38,9 +40,10 @@ SAudioPlayer.prototype.initControls = function () {
   this.playerVolume.setAttribute('type', 'range');
   this.playerVolume.setAttribute('min', 0);
   this.playerVolume.setAttribute('max', 100);
+  this.playerVolume.value = 50;
 };
 
-SAudioPlayer.prototype.initEvents = function () {
+SAudioPlayer.prototype.initUIEvents = function () {
   var player = this;
   this.playButton.addEventListener('click', function () {
     player.play()
@@ -54,23 +57,44 @@ SAudioPlayer.prototype.initEvents = function () {
   this.muteButton.addEventListener('click', function () {
     player.toggleMuted();
   }, false);
+  this.playerVolume.addEventListener('change', function () {
+    player.setVolume(player.playerVolume.value);
+  }, false);
+}
+
+SAudioPlayer.prototype.initMediaEvents = function () {
+  var player = this;
   this.audioElement.addEventListener('timeupdate', function () {
     player.progress()
+  }, false);
+  this.audioElement.addEventListener('volumechange', function () {
+    if (player.audioElement.muted || player.audioElement.volume == 0) {
+      player.muteButton.classList.add('muted');
+    } else if (player.muteButton.classList.contains('muted')) {
+      player.muteButton.classList.remove('muted');
+    }
   }, false);
   this.audioElement.addEventListener('ended', function () {
     player.pauseButton.style.display = 'none';
     player.playButton.style.display = 'inline';
+    player.stopButton.disabled = true;
   }, false);
-}
+  this.audioElement.addEventListener('playing', function () {
+    player.pauseButton.style.display = 'inline';
+    player.playButton.style.display = 'none';
+    player.stopButton.disabled = false;
+  }, false);
+  this.audioElement.addEventListener('pause', function () {
+    player.pauseButton.style.display = 'none';
+    player.playButton.style.display = 'inline';
+    player.stopButton.disabled = true;
+  }, false);
+};
 
 SAudioPlayer.prototype.initUI = function () {
   this.initControls();
   var divUI = document.createElement('div');
   divUI.className = 'player-ui';
-  var divCredits = document.createElement('div');
-  divCredits.className = 'player-credits';
-  var divTrackTitle = document.createElement('div');
-  divTrackTitle.className = 'player-track-title';
   var divControls = document.createElement('div');
   divControls.className = 'player-controls-container';
   divControls.appendChild(this.playButton);
@@ -79,25 +103,16 @@ SAudioPlayer.prototype.initUI = function () {
   divControls.appendChild(this.playerProgress);
   divControls.appendChild(this.muteButton);
   divControls.appendChild(this.playerVolume);
-  divUI.appendChild(divCredits);
   divUI.appendChild(divControls);
-  divUI.appendChild(divTrackTitle);
   this.domContainer.appendChild(divUI);
 }
 
 SAudioPlayer.prototype.play = function () {
-  if (!isNaN(this.audioElement.duration)) {
-    this.playerProgress.max = this.audioElement.duration;
-  }
   this.audioElement.play();
-  this.playButton.style.display = 'none';
-  this.pauseButton.style.display = 'inline';
 };
 
 SAudioPlayer.prototype.pause = function () {
   this.audioElement.pause();
-  this.pauseButton.style.display = 'none';
-  this.playButton.style.display = 'inline';
 };
 
 SAudioPlayer.prototype.stop = function () {
@@ -106,10 +121,14 @@ SAudioPlayer.prototype.stop = function () {
 };
 
 SAudioPlayer.prototype.progress = function () {
-  this.playerProgress.value = this.audioElement.currentTime;
+  this.playerProgress.value = this.audioElement.currentTime * 100 / this.audioElement.duration;
 };
 
-SAudioPlayer.prototype.toggleMuted = function() {
+SAudioPlayer.prototype.toggleMuted = function () {
   this.audioElement.muted = !this.audioElement.muted;
 }
+
+SAudioPlayer.prototype.setVolume = function (volume) {
+  this.audioElement.volume = parseInt(volume, 10) / 100;
+};
 

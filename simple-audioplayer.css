@@ -1,13 +1,14 @@
 
 .player-ui {
   width: 350px;
-  height: 80px;
+  height: 40px;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #F6F6F8;
   display: flex;
   flex-direction: column;
-  /*align-items: center;*/
+  justify-content: center;
+  /*align-items: stretch;*/
 }
 
 .player-controls-container {
@@ -47,7 +48,6 @@
 }
 
 .player-volume {
-  /*padding-left: 18px;*/
   margin-left: 0;
 }
 
@@ -59,6 +59,9 @@
 }
 
 .muted {
-  background: url(img/mute.png) no-repeat left center;
-  padding-left: 18px;
+  background: url(img/muted.png) no-repeat left center;
+}
+
+.player-track-title {
+  border: 1px solid #ccc;
 }
